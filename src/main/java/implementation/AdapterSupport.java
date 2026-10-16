@@ -28,6 +28,7 @@ final class AdapterSupport {
         }
     }
 
+    // el Engine ya devuelve sus errores como resultado; esto cubre lo que corre afuera, como leer la config
     static void reportingErrors(Consumer<String> onError, Runnable block) {
         try {
             block.run();
