@@ -5,7 +5,10 @@ import interpreter.InputProvider;
 import interpreter.PrintEmitter;
 import interpreter.PrintScriptInterpreter;
 import kotlin.Unit;
-import printscript.runner.PrintScriptRunner;
+import printscript.common.LanguageVersion;
+import printscript.interpreter.env.SystemEnvProvider;
+import printscript.runner.Engine;
+import printscript.runner.ExecutionResult;
 
 import java.io.InputStream;
 
@@ -14,21 +17,18 @@ public class PrintScriptInterpreterAdapter implements PrintScriptInterpreter {
 
     @Override
     public void execute(InputStream src, String version, PrintEmitter emitter, ErrorHandler handler, InputProvider provider) {
+        LanguageVersion languageVersion = AdapterSupport.parseVersion(version, handler::reportError);
+        if (languageVersion == null) {
+            return;
+        }
         byte[] reserve = new byte[RESERVE_BYTES];
         try {
-            PrintScriptRunner.INSTANCE.execute(
-                src,
-                version,
-                msg -> {
-                    emitter.print(msg);
-                    return Unit.INSTANCE;
-                },
-                provider::input,
-                err -> {
-                    handler.reportError(err);
-                    return Unit.INSTANCE;
-                }
-            );
+            // el TCK prueba readEnv con variables reales, por eso SystemEnvProvider
+            Engine engine = new Engine(emitter::print, new PromptingInput(emitter, provider), new SystemEnvProvider());
+            ExecutionResult result = engine.execute(AdapterSupport.utf8Reader(src), languageVersion, parsed -> Unit.INSTANCE);
+            if (result instanceof ExecutionResult.Failure failure) {
+                handler.reportError(failure.getMessage());
+            }
         } catch (OutOfMemoryError e) {
             reserve = null;
             System.gc();
@@ -38,6 +38,18 @@ public class PrintScriptInterpreterAdapter implements PrintScriptInterpreter {
             handler.reportError(t.getMessage() != null ? t.getMessage() : t.toString());
         } finally {
             reserve = null;
+        }
+    }
+
+    // el prompt del readInput se imprime por el canal de salida y la respuesta se pide por el de entrada
+    private record PromptingInput(PrintEmitter emitter, InputProvider provider)
+            implements printscript.interpreter.input.InputProvider {
+        @Override
+        public String readInput(String prompt) {
+            if (!prompt.isEmpty()) {
+                emitter.print(prompt);
+            }
+            return provider.input(prompt);
         }
     }
 }
