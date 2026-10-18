@@ -27,12 +27,15 @@ test {
 }
 
 dependencies {
-    implementation 'org.printscript:runner:1.1.1'
+    implementation 'org.printscript:runner:2.0.0'
+    // el runner no los expone: los adaptadores arman su propio formatter y linter
+    implementation 'org.printscript:formatter:2.0.0'
+    implementation 'org.printscript:linter:2.0.0'
     testImplementation 'junit:junit:4.13.1'
 }
 
 test {
     environment "BEST_FOOTBALL_CLUB", "San Lorenzo"
     useJUnit()
-}//hola
+}
 
