@@ -3,8 +3,8 @@ package implementation;
 import interpreter.PrintScriptFormatter;
 import kotlin.Unit;
 import printscript.common.LanguageVersion;
+import printscript.formatter.Formatter;
 import printscript.formatter.FormatterFactory;
-import printscript.formatter.FormatterInterface;
 import printscript.formatter.FormatterRulesLoader;
 import printscript.formatter.rule.FormatterRuleRegistry;
 import printscript.interpreter.env.MapEnvProvider;
@@ -32,7 +32,7 @@ public class PrintScriptFormatterAdapter implements PrintScriptFormatter {
         }
         AdapterSupport.reportingErrors(ignored -> { }, () -> {
             FormatterRuleRegistry registry = new FormatterRuleRegistry();
-            FormatterInterface formatter =
+            Formatter formatter =
                 FormatterFactory.INSTANCE.create(FormatterRulesLoader.INSTANCE.fromStream(config, registry), registry);
             withTempCopy(src, source -> new Engine(AdapterSupport.NO_OUTPUT, new QueueInput(), new MapEnvProvider()).format(
                 () -> openUtf8(source),
