@@ -10,7 +10,7 @@ import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.function.Consumer;
 
-// lo que comparten los tres adaptadores al traducir las interfaces del TCK al Engine
+// lo que comparten los tres adapters al traducir las interfaces del TCK al Engine
 final class AdapterSupport {
     // formatear y lintear no imprimen, pero el Engine siempre pide un Output
     static final Output NO_OUTPUT = line -> { };
@@ -18,7 +18,7 @@ final class AdapterSupport {
     private AdapterSupport() {
     }
 
-    // el TCK espera los errores por callback, nunca una excepcion
+    // TCK espera los errores por callback
     static LanguageVersion parseVersion(String version, Consumer<String> onError) {
         try {
             return LanguageVersion.Companion.parse(version);

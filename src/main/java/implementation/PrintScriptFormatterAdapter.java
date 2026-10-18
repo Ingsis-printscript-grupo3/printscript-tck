@@ -31,8 +31,9 @@ public class PrintScriptFormatterAdapter implements PrintScriptFormatter {
             return;
         }
         AdapterSupport.reportingErrors(ignored -> { }, () -> {
+            FormatterRuleRegistry registry = new FormatterRuleRegistry();
             FormatterInterface formatter =
-                FormatterFactory.INSTANCE.create(FormatterRulesLoader.INSTANCE.fromStream(config), new FormatterRuleRegistry());
+                FormatterFactory.INSTANCE.create(FormatterRulesLoader.INSTANCE.fromStream(config, registry), registry);
             withTempCopy(src, source -> new Engine(AdapterSupport.NO_OUTPUT, new QueueInput(), new MapEnvProvider()).format(
                 () -> openUtf8(source),
                 languageVersion,

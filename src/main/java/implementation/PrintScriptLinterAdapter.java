@@ -6,8 +6,8 @@ import kotlin.Unit;
 import printscript.common.LanguageVersion;
 import printscript.interpreter.env.MapEnvProvider;
 import printscript.interpreter.input.QueueInput;
+import printscript.linter.Linter;
 import printscript.linter.LinterFactory;
-import printscript.linter.LinterInterface;
 import printscript.runner.Engine;
 import printscript.runner.LintResult;
 
@@ -21,7 +21,7 @@ public class PrintScriptLinterAdapter implements PrintScriptLinter {
             return;
         }
         AdapterSupport.reportingErrors(handler::reportError, () -> {
-            LinterInterface linter = LinterFactory.INSTANCE.fromStream(config, languageVersion);
+            Linter linter = LinterFactory.INSTANCE.fromStream(config);
             LintResult result = new Engine(AdapterSupport.NO_OUTPUT, new QueueInput(), new MapEnvProvider()).lint(
                 AdapterSupport.utf8Reader(src),
                 languageVersion,
