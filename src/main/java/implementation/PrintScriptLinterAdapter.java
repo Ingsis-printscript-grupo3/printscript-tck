@@ -8,6 +8,7 @@ import printscript.interpreter.env.MapEnvProvider;
 import printscript.interpreter.input.QueueInput;
 import printscript.linter.Linter;
 import printscript.linter.LinterFactory;
+import printscript.linter.rule.LinterRuleRegistry;
 import printscript.runner.Engine;
 import printscript.runner.LintResult;
 
@@ -21,7 +22,7 @@ public class PrintScriptLinterAdapter implements PrintScriptLinter {
             return;
         }
         AdapterSupport.reportingErrors(handler::reportError, () -> {
-            Linter linter = LinterFactory.INSTANCE.fromStream(config);
+            Linter linter = LinterFactory.INSTANCE.fromStream(config, new LinterRuleRegistry());
             LintResult result = new Engine(AdapterSupport.NO_OUTPUT, new QueueInput(), new MapEnvProvider()).lint(
                 AdapterSupport.utf8Reader(src),
                 languageVersion,
